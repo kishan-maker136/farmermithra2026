@@ -3,8 +3,9 @@
 # 🌾 Farmer Mithra 2026
 
 ### 🚀 AI-Powered Smart Farming Assistant
+<img width="440" height="416" alt="WhatsApp Image 2026-04-26 at 10 36 54 AM" src="https://github.com/user-attachments/assets/b68ee406-0c90-4620-b97b-59e0bd7cca5a" />
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=26&pause=1000&color=00C853&center=true&vCenter=true&width=600&lines=Empowering+Farmers+with+AI;Crop+Disease+Detection;Smart+Weather+Insights;Future+of+Agriculture+🌱" />
+<img src=font=Fira+Code&size=26&pause=1000&color=00C853&center=true&vCenter=true&width=600&lines=Empowering+Farmers+with+AI;Crop+Disease+Detection;Smart+Weather+Insights;Future+of+Agriculture+🌱" />
 
 <br><br>
 
