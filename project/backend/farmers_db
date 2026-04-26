@@ -1,0 +1,78 @@
+{
+  "9876543210": {
+    "name": "Raju Patil",
+    "phone": "9876543210",
+    "city": "Pune",
+    "lands": [
+      {
+        "crop": "Tomato",
+        "crop_name": "Tomato",
+        "area": "2.5",
+        "area_acres": "2.5",
+        "sowing_date": "2026-03-15",
+        "status": "active"
+      },
+      {
+        "crop": "Onion",
+        "crop_name": "Onion",
+        "area": "1.8",
+        "area_acres": "1.8",
+        "sowing_date": "2026-02-10",
+        "status": "harvest"
+      }
+    ]
+  },
+  "9845073601": {
+    "name": "charan",
+    "phone": "9845073601",
+    "city": "bangalore",
+    "lands": [
+      {
+        "crop": "rice",
+        "crop_name": "rice",
+        "area": "0.5",
+        "area_acres": "0.5",
+        "sowing_date": "2025-05-23",
+        "status": "active"
+      }
+    ]
+  },
+  "0987654321": {
+    "name": "kishan",
+    "phone": "0987654321",
+    "city": "tumkur",
+    "lands": [
+      {
+        "crop": "cocu",
+        "crop_name": "cocu",
+        "area": "1.4",
+        "area_acres": "1.4",
+        "sowing_date": "2026-03-02",
+        "status": "active"
+      },
+      {
+        "crop": "rice",
+        "crop_name": "rice",
+        "area": "2",
+        "area_acres": "2",
+        "sowing_date": "2026-02-22",
+        "status": "active"
+      }
+    ]
+  },
+  "1234567890": {
+    "name": "Nikhil D P",
+    "phone": "1234567890",
+    "city": "mangalore",
+    "lands": [
+      {
+        "crop": "tomato",
+        "crop_name": "tomato",
+        "area": "2.1",
+        "area_acres": "2.1",
+        "sowing_date": "2024-02-11",
+        "status": "active"
+      }
+    ]
+  }
+}

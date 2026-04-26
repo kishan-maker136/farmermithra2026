@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "shop_name": "Krishi Bhandar",
+    "city": "pune",
+    "type": "Seeds"
+  },
+  {
+    "id": 2,
+    "shop_name": "Agro Supplies Plus",
+    "city": "pune",
+    "type": "Fertilizer"
+  },
+  {
+    "id": 3,
+    "shop_name": "Green Farm Store",
+    "city": "pune",
+    "type": "Pesticide"
+  },
+  {
+    "id": 4,
+    "shop_name": "nikhil agro",
+    "city": "bangalore",
+    "type": "General"
+  },
+  {
+    "id": 5,
+    "shop_name": "agro needs",
+    "city": "mangalore",
+    "type": "General"
+  },
+  {
+    "id": 6,
+    "shop_name": "nikhil agro",
+    "city": "mangalore kullur",
+    "type": "Fertilizer"
+  }
+]

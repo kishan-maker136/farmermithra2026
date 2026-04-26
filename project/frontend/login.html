@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mithrava - Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="login-hero">
+  <div class="login-box">
+
+    <div class="login-logo">
+      <div class="leaf-icon">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <path d="M18 4C18 4 8 10 8 20C8 26 12.5 30 18 30C23.5 30 28 26 28 20C28 10 18 4 18 4Z" fill="white"/>
+          <path d="M18 14V30" stroke="#2d6a4f" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>Mithrava</h1>
+      <p>AI-Powered Smart Farming Assistant</p>
+    </div>
+
+    <!-- Step 1: Phone Number -->
+    <div id="step-phone">
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="phone-input" class="form-control"
+               placeholder="Enter 10-digit mobile number" maxlength="10">
+      </div>
+      <button class="btn btn-primary w-100 btn-lg" id="send-otp-btn" onclick="sendOTP()">
+        Send OTP
+      </button>
+      <p class="text-muted text-center mt-2" style="font-size:0.78rem;">
+        
+      </p>
+    </div>
+
+    <!-- Step 2: OTP Verification -->
+    <div id="step-otp" class="hidden">
+      <p class="text-muted mb-2">Enter the OTP sent to your phone</p>
+
+      <div class="otp-label">OTP (Testing Mode)</div>
+      <div class="otp-display" id="otp-display">------</div>
+      <div class="otp-label mb-2">Enter this OTP below</div>
+
+      <div class="form-group">
+        <label>Enter OTP</label>
+        <input type="text" id="otp-input" class="form-control"
+               placeholder="6-digit OTP" maxlength="6" style="letter-spacing:6px;font-size:1.3rem;font-weight:700;text-align:center;">
+      </div>
+
+      <button class="btn btn-primary w-100 btn-lg" id="verify-btn" onclick="verifyOTP()">
+        Verify &amp; Login
+      </button>
+      <button class="btn btn-secondary w-100 mt-1" onclick="resetLogin()">
+        Change Number
+      </button>
+    </div>
+
+    <!-- Alert Area -->
+    <div id="login-alert" class="hidden mt-2"></div>
+
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5000';
+let currentPhone = '';
+
+async function sendOTP() {
+  const phone = document.getElementById('phone-input').value.trim();
+  const btn   = document.getElementById('send-otp-btn');
+
+  if (phone.length < 10) {
+    showAlert('login-alert', 'error', 'Please enter a valid 10-digit phone number');
+    return;
+  }
+
+  // Admin shortcut
+  if (phone === '0000000000') {
+    localStorage.setItem('mithrava_role',  'admin');
+    localStorage.setItem('mithrava_phone', phone);
+    window.location.href = 'admin.html';
+    return;
+  }
+
+  btn.disabled    = true;
+  btn.innerHTML   = '<span class="spinner"></span> Sending...';
+
+  try {
+    const res  = await fetch(`${API}/send_otp`, {
+      method:  'POST',
+      headers: {'Content-Type': 'application/json'},
+      body:    JSON.stringify({ phone })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      currentPhone = phone;
+      document.getElementById('otp-display').textContent = data.otp;
+      document.getElementById('step-phone').classList.add('hidden');
+      document.getElementById('step-otp').classList.remove('hidden');
+      showAlert('login-alert', 'info', 'OTP ready. Enter it above to login.');
+    } else {
+      showAlert('login-alert', 'error', data.message || 'Failed to send OTP');
+    }
+  } catch (err) {
+    showAlert('login-alert', 'error', 'Cannot reach server. Make sure Flask is running.');
+  }
+
+  btn.disabled  = false;
+  btn.innerHTML = 'Send OTP';
+}
+
+async function verifyOTP() {
+  const otp = document.getElementById('otp-input').value.trim();
+  const btn = document.getElementById('verify-btn');
+
+  if (otp.length < 6) {
+    showAlert('login-alert', 'error', 'Enter the 6-digit OTP');
+    return;
+  }
+
+  btn.disabled  = true;
+  btn.innerHTML = '<span class="spinner"></span> Verifying...';
+
+  try {
+    const res  = await fetch(`${API}/verify_otp`, {
+      method:  'POST',
+      headers: {'Content-Type': 'application/json'},
+      body:    JSON.stringify({ phone: currentPhone, otp })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem('mithrava_farmer', JSON.stringify(data.farmer));
+      localStorage.setItem('mithrava_phone',  currentPhone);
+      localStorage.setItem('mithrava_role',   'farmer');
+      showAlert('login-alert', 'success', 'Login successful! Redirecting...');
+      setTimeout(() => window.location.href = 'dashboard.html', 900);
+    } else {
+      showAlert('login-alert', 'error', data.message || 'Invalid OTP');
+    }
+  } catch (err) {
+    showAlert('login-alert', 'error', 'Cannot reach server.');
+  }
+
+  btn.disabled  = false;
+  btn.innerHTML = 'Verify &amp; Login';
+}
+
+function resetLogin() {
+  document.getElementById('step-phone').classList.remove('hidden');
+  document.getElementById('step-otp').classList.add('hidden');
+  document.getElementById('otp-display').textContent = '------';
+  document.getElementById('otp-input').value  = '';
+  document.getElementById('phone-input').value = '';
+  document.getElementById('login-alert').classList.add('hidden');
+}
+
+function showAlert(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = `alert alert-${type}`;
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  if (type === 'success') setTimeout(() => el.classList.add('hidden'), 3500);
+}
+
+// Enter key support
+document.addEventListener('keypress', e => {
+  if (e.key === 'Enter') {
+    if (!document.getElementById('step-otp').classList.contains('hidden')) verifyOTP();
+    else sendOTP();
+  }
+});
+</script>
+</body>
+</html>

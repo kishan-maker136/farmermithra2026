@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "phone": "9876543210",
+    "name": "Raju Patil",
+    "city": "Pune",
+    "message": "i have more issues about the drip irrigation",
+    "timestamp": "2026-04-07 15:00:54",
+    "status": "pending"
+  },
+  {
+    "id": 2,
+    "phone": "0987654321",
+    "name": "kishan",
+    "city": "tumkur",
+    "message": "i have issues with my crops",
+    "timestamp": "2026-04-25 13:24:46",
+    "status": "pending"
+  }
+]

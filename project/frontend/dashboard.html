@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mithrava – Farmer Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* ─── Variables ─────────────────────────────────────────── */
+:root {
+  --g-dk:  #1a3c2b;
+  --g-md:  #2d6a4f;
+  --g-mn:  #40916c;
+  --g-lt:  #52b788;
+  --g-pl:  #b7e4c7;
+  --g-bg:  #f0faf4;
+  --acc:   #f77f00;
+  --acc-l: #ffd166;
+  --wh:    #ffffff;
+  --g1:    #f8f9fa;
+  --g2:    #e9ecef;
+  --g4:    #adb5bd;
+  --g6:    #6c757d;
+  --g8:    #343a40;
+  --red:   #e63946;
+  --blue:  #3b82f6;
+  --sh-s:  0 2px 10px rgba(0,0,0,0.07);
+  --sh-m:  0 6px 24px rgba(0,0,0,0.11);
+  --sh-l:  0 12px 48px rgba(0,0,0,0.15);
+  --r-s: 10px; --r-m: 16px; --r-l: 22px; --r-xl: 30px;
+  --tr: all 0.22s ease;
+  --font-h: 'Sora', sans-serif;
+  --font-b: 'DM Sans', sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-b);background:var(--g-bg);color:var(--g8);min-height:100vh}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--g-lt);border-radius:3px}
+h1,h2,h3,h4{font-family:var(--font-h);font-weight:700}
+p{color:var(--g6)}
+
+/* ─── Brand Bar ─────────────────────────────────────────── */
+.brand-bar{
+  background:linear-gradient(135deg,var(--g-dk),var(--g-md));
+  padding:14px 24px;display:flex;align-items:center;gap:12px;
+  box-shadow:var(--sh-m);position:sticky;top:0;z-index:100;
+}
+.brand-bar .logo{width:42px;height:42px;background:var(--g-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.brand-bar .bname{font-family:var(--font-h);font-size:1.4rem;font-weight:700;color:var(--wh);letter-spacing:.5px}
+.brand-bar .btag{font-size:.72rem;color:var(--g-pl);font-weight:400}
+.brand-bar .btext{display:flex;flex-direction:column}
+.brand-bar .nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.nav-avatar{width:38px;height:38px;background:var(--g-pl);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--g-dk);font-family:var(--font-h);font-size:.95rem;cursor:pointer;border:2px solid rgba(255,255,255,.3)}
+.nav-farmer-name{color:var(--wh);font-size:.88rem;font-weight:600;font-family:var(--font-h)}
+.nav-farmer-city{font-size:.72rem;color:var(--g-pl)}
+.btn-logout{padding:7px 14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:var(--r-s);color:var(--wh);font-family:var(--font-h);font-size:.8rem;font-weight:600;cursor:pointer;transition:var(--tr)}
+.btn-logout:hover{background:rgba(255,255,255,.25)}
+.global-lang-select{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:var(--r-s);color:var(--wh);font-family:var(--font-h);font-size:.78rem;font-weight:600;padding:6px 10px;cursor:pointer;outline:none;transition:var(--tr)}
+.global-lang-select:hover{background:rgba(255,255,255,.25)}
+.global-lang-select option{color:var(--g8);background:var(--wh)}
+
+/* ─── Tabs Nav ──────────────────────────────────────────── */
+.tabs-nav{background:var(--wh);border-bottom:2px solid var(--g2);padding:0 24px;display:flex;gap:0;overflow-x:auto}
+.tab-nav-btn{padding:14px 20px;background:transparent;border:none;border-bottom:3px solid transparent;font-family:var(--font-h);font-size:.85rem;font-weight:600;color:var(--g6);cursor:pointer;transition:var(--tr);white-space:nowrap;display:flex;align-items:center;gap:7px;margin-bottom:-2px}
+.tab-nav-btn:hover{color:var(--g-mn)}
+.tab-nav-btn.active{color:var(--g-mn);border-bottom-color:var(--g-mn)}
+.tab-nav-btn .t-icon{font-size:1rem}
+
+/* ─── Page Wrap ─────────────────────────────────────────── */
+.pw{max-width:1100px;margin:0 auto;padding:28px 20px}
+
+/* ─── Hero Banner ───────────────────────────────────────── */
+.hero-banner{background:linear-gradient(135deg,var(--g-md),var(--g-dk));border-radius:var(--r-l);padding:28px 32px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;overflow:hidden}
+.hero-banner::before{content:'🌾';position:absolute;right:32px;bottom:-10px;font-size:7rem;opacity:.12}
+.hero-banner .greet{font-size:.78rem;color:var(--g-pl);font-weight:500;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.hero-banner h1{color:var(--wh);font-size:clamp(1.5rem,3vw,2rem);margin-bottom:4px}
+.hero-banner .city-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border-radius:999px;padding:5px 14px;color:var(--g-pl);font-size:.82rem;font-weight:500}
+.hero-stats{display:flex;gap:16px;flex-wrap:wrap}
+.hstat{background:rgba(255,255,255,.15);border-radius:var(--r-m);padding:14px 20px;text-align:center;min-width:90px;backdrop-filter:blur(6px)}
+.hstat .n{font-size:1.7rem;font-weight:700;color:var(--wh);font-family:var(--font-h)}
+.hstat .l{font-size:.72rem;color:var(--g-pl);margin-top:2px}
+
+/* ─── Cards ─────────────────────────────────────────────── */
+.card{background:var(--wh);border-radius:var(--r-m);padding:22px;box-shadow:var(--sh-s);border:1px solid var(--g2);transition:var(--tr)}
+.card:hover{box-shadow:var(--sh-m);transform:translateY(-2px)}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:2px solid var(--g-bg)}
+.card-head .ic{width:36px;height:36px;background:var(--g-bg);border-radius:var(--r-s);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.card-head h3{color:var(--g-dk);font-size:.97rem;font-weight:600}
+
+/* ─── Grid ──────────────────────────────────────────────── */
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:768px){.g2,.g3{grid-template-columns:1fr}}
+
+/* ─── Weather Strip ─────────────────────────────────────── */
+.weather-strip{background:linear-gradient(135deg,var(--g-mn),var(--g-md));border-radius:var(--r-m);padding:22px 26px;color:var(--wh);display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-bottom:22px}
+.wt-main{display:flex;align-items:center;gap:14px}
+.wt-icon{font-size:2.8rem}
+.wt-temp{font-size:2.4rem;font-weight:700;font-family:var(--font-h)}
+.wt-desc{font-size:.85rem;opacity:.85;margin-top:2px}
+.wt-humidity{font-size:.78rem;opacity:.7;margin-top:2px}
+.wt-advice{background:rgba(255,255,255,.18);border-radius:var(--r-s);padding:14px 18px;font-size:.82rem;font-weight:500;flex:1;min-width:220px;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.2);line-height:1.6;max-height:130px;overflow-y:auto}
+.wt-advice strong{display:block;font-size:.7rem;opacity:.75;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
+.wt-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.wt-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:600;font-family:var(--font-h)}
+.wt-badge.ok{background:rgba(183,228,199,.3);color:#b7e4c7}
+.wt-badge.no{background:rgba(230,57,70,.25);color:#ffb3b8}
+
+/* ─── Crop Cards ────────────────────────────────────────── */
+.crop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.crop-card{background:linear-gradient(145deg,var(--g-bg),#e8f5ed);border:1px solid var(--g-pl);border-radius:var(--r-m);padding:18px;position:relative;overflow:hidden;transition:var(--tr);cursor:default}
+.crop-card:hover{transform:translateY(-3px);box-shadow:var(--sh-m);border-color:var(--g-lt)}
+.crop-card::before{content:attr(data-emoji);position:absolute;right:10px;bottom:-4px;font-size:3rem;opacity:.18}
+.crop-name{font-family:var(--font-h);font-weight:700;color:var(--g-dk);font-size:.98rem;margin-bottom:4px}
+.crop-area{font-size:.78rem;color:var(--g6);margin-bottom:8px}
+.crop-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.7rem;font-weight:700;font-family:var(--font-h)}
+.crop-badge.active{background:var(--g-pl);color:var(--g-dk)}
+.crop-badge.harvest{background:#fff0d9;color:#a05000}
+
+/* ─── Vendor Cards ──────────────────────────────────────── */
+.vendor-list{display:flex;flex-direction:column;gap:10px}
+.vendor-item{background:var(--g1);border:1px solid var(--g2);border-radius:var(--r-s);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;transition:var(--tr)}
+.vendor-item:hover{background:var(--g-bg);border-color:var(--g-pl)}
+.vendor-item .vname{font-weight:700;color:var(--g-dk);font-family:var(--font-h);font-size:.9rem}
+.vendor-item .vcity{font-size:.76rem;color:var(--g6);margin-top:2px}
+.vendor-type{padding:4px 10px;border-radius:999px;font-size:.7rem;font-weight:700;font-family:var(--font-h);background:#dbeafe;color:#1e40af;white-space:nowrap}
+
+/* ─── Buttons ───────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border:none;border-radius:var(--r-s);font-family:var(--font-h);font-size:.86rem;font-weight:600;cursor:pointer;transition:var(--tr);text-decoration:none;white-space:nowrap}
+.btn-primary{background:var(--g-mn);color:var(--wh)}
+.btn-primary:hover{background:var(--g-dk);transform:translateY(-2px);box-shadow:0 4px 14px rgba(64,145,108,.4)}
+.btn-accent{background:var(--acc);color:var(--wh)}
+.btn-accent:hover{background:#e06e00;transform:translateY(-2px)}
+.btn-secondary{background:var(--g2);color:var(--g8);border:1px solid var(--g2)}
+.btn-secondary:hover{background:var(--g4)}
+.btn-outline{background:transparent;border:2px solid var(--g-mn);color:var(--g-mn)}
+.btn-outline:hover{background:var(--g-mn);color:var(--wh)}
+.btn-sm{padding:6px 13px;font-size:.78rem}
+.btn-lg{padding:13px 28px;font-size:.95rem;border-radius:var(--r-m)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none!important}
+.btn-danger{background:var(--red);color:var(--wh)}
+.w100{width:100%}
+
+/* ─── Forms ─────────────────────────────────────────────── */
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:.8rem;font-weight:600;color:var(--g-dk);margin-bottom:5px;font-family:var(--font-h)}
+.fc{width:100%;padding:10px 13px;border:2px solid var(--g2);border-radius:var(--r-s);font-family:var(--font-b);font-size:.88rem;color:var(--g8);background:var(--wh);transition:var(--tr);outline:none}
+.fc:focus{border-color:var(--g-mn);box-shadow:0 0 0 3px rgba(64,145,108,.14)}
+textarea.fc{resize:vertical;min-height:80px}
+
+/* ─── Alert ─────────────────────────────────────────────── */
+.alert{padding:11px 15px;border-radius:var(--r-s);font-size:.86rem;font-weight:500;margin-bottom:12px;border-left:4px solid transparent}
+.al-ok{background:#ecfdf5;border-color:var(--g-mn);color:var(--g-dk)}
+.al-err{background:#fef2f2;border-color:var(--red);color:#991b1b}
+.al-inf{background:#eff6ff;border-color:var(--blue);color:#1e40af}
+.hidden{display:none!important}
+
+/* ─── Spinner ───────────────────────────────────────────── */
+.spinner{width:18px;height:18px;border:3px solid rgba(255,255,255,.3);border-top-color:var(--wh);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ─── Chat ──────────────────────────────────────────────── */
+.chat-win{height:380px;overflow-y:auto;padding:14px;background:var(--g1);border-radius:var(--r-s);border:1px solid var(--g2);margin-bottom:10px;display:flex;flex-direction:column;gap:10px}
+.cmsg{max-width:82%;padding:10px 14px;border-radius:var(--r-m);font-size:.86rem;line-height:1.55;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.cmsg.user{background:var(--g-mn);color:var(--wh);align-self:flex-end;border-bottom-right-radius:4px}
+.cmsg.bot{background:var(--wh);color:var(--g8);align-self:flex-start;border-bottom-left-radius:4px;box-shadow:var(--sh-s)}
+.cmsg.typing{opacity:.6;font-style:italic}
+.chat-row{display:flex;gap:8px;align-items:flex-end}
+.chat-row textarea{flex:1;resize:none;min-height:44px;max-height:100px;padding:10px 13px;border:2px solid var(--g2);border-radius:var(--r-s);font-family:var(--font-b);font-size:.86rem;outline:none;transition:var(--tr)}
+.chat-row textarea:focus{border-color:var(--g-mn)}
+.mic-btn{width:44px;height:44px;border-radius:50%;border:2px solid var(--g-mn);background:var(--wh);color:var(--g-mn);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--tr);flex-shrink:0}
+.mic-btn:hover{background:var(--g-mn);color:var(--wh)}
+.mic-btn.active{background:var(--red);border-color:var(--red);color:var(--wh);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(230,57,70,.4)}50%{box-shadow:0 0 0 8px rgba(230,57,70,0)}}
+.spk-btn{width:44px;height:44px;border-radius:50%;border:2px solid var(--blue);background:var(--wh);color:var(--blue);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--tr);flex-shrink:0}
+.spk-btn:hover{background:var(--blue);color:var(--wh)}
+.spk-btn.speaking{background:var(--blue);color:var(--wh);animation:pulse2 1s infinite}
+@keyframes pulse2{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.4)}50%{box-shadow:0 0 0 8px rgba(59,130,246,0)}}
+.rec-bars{display:flex;align-items:center;gap:3px;height:18px}
+.rec-bars span{width:3px;border-radius:2px;background:var(--red);animation:wave 1.1s ease-in-out infinite}
+.rec-bars span:nth-child(1){height:7px;animation-delay:0s}
+.rec-bars span:nth-child(2){height:14px;animation-delay:.1s}
+.rec-bars span:nth-child(3){height:10px;animation-delay:.2s}
+.rec-bars span:nth-child(4){height:16px;animation-delay:.3s}
+.rec-bars span:nth-child(5){height:9px;animation-delay:.4s}
+@keyframes wave{0%,100%{transform:scaleY(.5)}50%{transform:scaleY(1.4)}}
+
+/* ─── Call Card ──────────────────────────────────────────── */
+.call-confirm{background:linear-gradient(135deg,#fff7ed,#fef3c7);border:2px solid var(--acc-l);border-radius:var(--r-m);padding:18px;margin-top:14px;display:none}
+.call-confirm .cc-icon{font-size:2rem;margin-bottom:8px}
+.call-confirm h4{color:var(--g-dk);font-family:var(--font-h);margin-bottom:4px}
+
+/* ─── Section Label ──────────────────────────────────────── */
+.sec-label{font-family:var(--font-h);font-size:.68rem;text-transform:uppercase;letter-spacing:1.8px;color:var(--g-mn);font-weight:700;margin-bottom:12px}
+
+/* ─── Tab Panels ─────────────────────────────────────────── */
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ─── Disease Result ─────────────────────────────────────── */
+.disease-res{background:var(--wh);border-radius:var(--r-s);padding:18px;border:1px solid var(--g2);margin-top:14px}
+.disease-res .dname{font-size:1.05rem;font-weight:700;color:var(--g-dk);font-family:var(--font-h)}
+.disease-res .dconf{font-size:.78rem;color:var(--g6);margin-bottom:10px}
+.disease-res .drx{background:var(--g-bg);padding:10px 14px;border-radius:var(--r-s);font-size:.86rem}
+.disease-res .drx-lbl{font-weight:600;color:var(--g-mn);font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.top3-list{margin-top:12px}
+.top3-item{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--g6);margin-bottom:5px}
+.top3-bar{height:6px;border-radius:3px;background:var(--g-pl);flex:0 0 auto}
+.btn-speak-disease{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 14px;border-radius:var(--r-s);border:2px solid var(--blue);background:var(--wh);color:var(--blue);font-family:var(--font-h);font-size:.78rem;font-weight:600;cursor:pointer;transition:var(--tr)}
+.btn-speak-disease:hover{background:var(--blue);color:var(--wh)}
+
+/* ─── Upload Area ────────────────────────────────────────── */
+.upload-area{border:2px dashed var(--g-pl);border-radius:var(--r-m);padding:32px;text-align:center;cursor:pointer;transition:var(--tr);background:var(--g-bg)}
+.upload-area:hover{border-color:var(--g-mn);background:#e8f5ed}
+.upload-area .u-icon{font-size:2.5rem;margin-bottom:10px}
+#prev-img{max-width:100%;border-radius:var(--r-s);margin-top:12px;border:2px solid var(--g-pl);display:none}
+
+/* ─── Loading ───────────────────────────────────────────── */
+.w-loading{display:flex;align-items:center;gap:10px;padding:14px;color:var(--g6);font-size:.88rem}
+.s-green{color:var(--g-mn);font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:5px}
+.dot-live{width:8px;height:8px;border-radius:50%;background:var(--g-lt);animation:blink 1.5s ease-in-out infinite;display:inline-block}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ════════════════════════════════════════════════════════
+   GOVERNMENT SCHEMES SECTION — New Styles
+   ════════════════════════════════════════════════════════ */
+
+/* ─── Schemes Header Banner ─────────────────────────────── */
+.schemes-hero {
+  background: linear-gradient(135deg, #1a237e, #283593, #1565c0);
+  border-radius: var(--r-l);
+  padding: 24px 28px;
+  margin-bottom: 22px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.schemes-hero::before {
+  content: '🏛️';
+  position: absolute;
+  right: 24px;
+  bottom: -8px;
+  font-size: 6rem;
+  opacity: .10;
+}
+.schemes-hero h2 {
+  color: #fff;
+  font-size: 1.3rem;
+  margin-bottom: 4px;
+}
+.schemes-hero p {
+  color: #90caf9;
+  font-size: .82rem;
+  margin: 0;
+}
+.schemes-hero-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sh-badge {
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 999px;
+  padding: 5px 14px;
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 700;
+  font-family: var(--font-h);
+  backdrop-filter: blur(4px);
+}
+
+/* ─── Filter Tabs ────────────────────────────────────────── */
+.scheme-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.sf-btn {
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 2px solid var(--g2);
+  background: var(--wh);
+  font-family: var(--font-h);
+  font-size: .76rem;
+  font-weight: 600;
+  color: var(--g6);
+  cursor: pointer;
+  transition: var(--tr);
+}
+.sf-btn:hover { border-color: var(--g-mn); color: var(--g-mn); }
+.sf-btn.active { background: var(--g-mn); border-color: var(--g-mn); color: var(--wh); }
+
+/* ─── Scheme Cards ────────────────────────────────────────── */
+.schemes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.scheme-card {
+  background: var(--wh);
+  border: 1.5px solid var(--g2);
+  border-radius: var(--r-m);
+  overflow: hidden;
+  transition: var(--tr);
+  box-shadow: var(--sh-s);
+}
+.scheme-card:hover {
+  border-color: #90caf9;
+  box-shadow: 0 4px 20px rgba(21,101,192,.12);
+  transform: translateY(-2px);
+}
+.scheme-card.open {
+  border-color: #1565c0;
+  box-shadow: 0 6px 24px rgba(21,101,192,.18);
+}
+
+/* ─── Scheme Header (clickable row) ─────────────────────── */
+.scheme-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  cursor: pointer;
+  user-select: none;
+}
+.scheme-icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-s);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.scheme-meta { flex: 1; min-width: 0; }
+.scheme-name {
+  font-family: var(--font-h);
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--g-dk);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.scheme-short {
+  font-size: .78rem;
+  color: var(--g6);
+  line-height: 1.4;
+}
+.scheme-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+.s-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: .65rem;
+  font-weight: 700;
+  font-family: var(--font-h);
+}
+.s-tag.ongoing  { background: #dcfce7; color: #166534; }
+.s-tag.central  { background: #dbeafe; color: #1e40af; }
+.s-tag.state    { background: #f3e8ff; color: #6b21a8; }
+.s-tag.subsidy  { background: #fef9c3; color: #854d0e; }
+.s-tag.cash     { background: #fee2e2; color: #991b1b; }
+.s-tag.new2025  { background: #ffedd5; color: #c2410c; }
+
+.scheme-chevron {
+  font-size: .85rem;
+  color: var(--g4);
+  transition: transform .25s ease;
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+.scheme-card.open .scheme-chevron {
+  transform: rotate(180deg);
+}
+
+/* ─── Scheme Dropdown Body ───────────────────────────────── */
+.scheme-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .35s ease, padding .25s ease;
+  border-top: 0px solid var(--g2);
+}
+.scheme-card.open .scheme-body {
+  max-height: 600px;
+  border-top-width: 1px;
+}
+
+.scheme-body-inner {
+  padding: 18px 20px 20px;
+  background: linear-gradient(to bottom, #f0f7ff, #fff);
+}
+
+.scheme-desc {
+  font-size: .87rem;
+  color: var(--g8);
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.scheme-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.sdet-item {
+  background: var(--wh);
+  border: 1px solid #e0eeff;
+  border-radius: var(--r-s);
+  padding: 10px 14px;
+}
+.sdet-item .sdet-lbl {
+  font-size: .65rem;
+  font-weight: 700;
+  color: #1565c0;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  margin-bottom: 3px;
+  font-family: var(--font-h);
+}
+.sdet-item .sdet-val {
+  font-size: .84rem;
+  font-weight: 600;
+  color: var(--g-dk);
+}
+
+.scheme-docs {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--r-s);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.scheme-docs .docs-lbl {
+  font-size: .7rem;
+  font-weight: 700;
+  color: #92400e;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom:  6px;
+  font-family: var(--font-h);
+}
+.scheme-docs ul {
+  margin: 0;
+  padding-left: 16px;
+}
+.scheme-docs ul li {
+  font-size: .82rem;
+  color: var(--g8);
+  margin-bottom: 3px;
+}
+
+.scheme-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-apply {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  background: linear-gradient(135deg, #1565c0, #1976d2);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-s);
+  font-family: var(--font-h);
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--tr);
+  box-shadow: 0 2px 10px rgba(21,101,192,.3);
+}
+.btn-apply:hover {
+  background: linear-gradient(135deg, #0d47a1, #1565c0);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(21,101,192,.4);
+}
+
+.btn-info-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 16px;
+  background: var(--wh);
+  color: #1565c0;
+  border: 2px solid #90caf9;
+  border-radius: var(--r-s);
+  font-family: var(--font-h);
+  font-size: .78rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--tr);
+}
+.btn-info-link:hover {
+  background: #e3f2fd;
+  border-color: #1565c0;
+}
+
+.scheme-helpline {
+  font-size: .74rem;
+  color: var(--g6);
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media(max-width:600px){
+  .pw{padding:16px 12px}
+  .hero-banner{padding:20px 18px}
+  .tabs-nav{padding:0 12px}
+  .tab-nav-btn{padding:12px 14px;font-size:.78rem}
+  .scheme-header{padding:13px 14px;gap:10px}
+  .scheme-icon-box{width:38px;height:38px;font-size:1.1rem}
+  .scheme-details-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ BRAND BAR ══════════════════════════════════════════ -->
+<div class="brand-bar">
+  <div class="logo">🌿</div>
+  <div class="btext">
+    <span class="bname">Mithrava</span>
+    <span class="btag" data-i18n="brand_tag">Smart Farming Assistant</span>
+  </div>
+  <div class="nav-right">
+    <select class="global-lang-select" id="global-lang-select" onchange="onGlobalLangChange(this.value)" title="Select Language">
+      <option value="en">🇬🇧 English</option>
+      <option value="kn">🌿 ಕನ್ನಡ</option>
+      <option value="hi">🇮🇳 हिंदी</option>
+    </select>
+    <div>
+      <div class="nav-farmer-name" id="nav-name">Loading...</div>
+      <div class="nav-farmer-city" id="nav-city">—</div>
+    </div>
+    <div class="nav-avatar" id="nav-avatar">?</div>
+    <button class="btn-logout" onclick="logout()" data-i18n="logout">Logout</button>
+  </div>
+</div>
+
+<!-- ═══ TABS NAV ═══════════════════════════════════════════ -->
+<div class="tabs-nav">
+  <button class="tab-nav-btn active" onclick="switchTab('home',this)"><span class="t-icon">🏠</span> <span data-i18n="tab_home">Home</span></button>
+  <button class="tab-nav-btn" onclick="switchTab('irrigation',this)"><span class="t-icon">💧</span> <span data-i18n="tab_irrigation">Irrigation</span></button>
+  <button class="tab-nav-btn" onclick="switchTab('vendors',this)"><span class="t-icon">🏪</span> <span data-i18n="tab_vendors">Vendors</span></button>
+  <button class="tab-nav-btn" onclick="switchTab('chat',this)"><span class="t-icon">🤖</span> <span data-i18n="tab_chat">AI Chat</span></button>
+  <button class="tab-nav-btn" onclick="switchTab('disease',this)"><span class="t-icon">🔬</span> <span data-i18n="tab_disease">Disease</span></button>
+  <button class="tab-nav-btn" onclick="switchTab('schemes',this)"><span class="t-icon">🏛️</span> <span data-i18n="tab_schemes">Govt Schemes</span></button>
+  <button class="tab-nav-btn" onclick="switchTab('call',this)"><span class="t-icon">📞</span> <span data-i18n="tab_call">Call Help</span></button>
+</div>
+
+<!-- ═══ MAIN CONTENT ═══════════════════════════════════════ -->
+<div class="pw">
+
+  <!-- ── HOME TAB ─────────────────────────────────────────── -->
+  <div id="tab-home" class="tab-panel active">
+    <div class="hero-banner">
+      <div>
+        <div class="greet" data-i18n="welcome_back">Welcome back</div>
+        <h1 id="hero-name">Farmer</h1>
+        <div class="city-tag">📍 <span id="hero-city">—</span></div>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><div class="n" id="stat-lands">0</div><div class="l" data-i18n="land_parcels">Land Parcels</div></div>
+        <div class="hstat"><div class="n" id="stat-crops">0</div><div class="l" data-i18n="crops">Crops</div></div>
+        <div class="hstat"><div class="n" id="stat-area">0</div><div class="l" data-i18n="total_acres">Total Acres</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="ic">🌾</div><h3 data-i18n="my_crops">My Crops & Lands</h3></div>
+      <div class="crop-grid" id="crops-grid">
+        <div style="color:var(--g6);font-size:.88rem;padding:10px" data-i18n="loading_crops">Loading crops...</div>
+      </div>
+    </div>
+    <div style="margin-top:18px">
+      <div class="sec-label" data-i18n="irrigation_summary">Today's Irrigation Summary</div>
+      <div id="home-weather">
+        <div class="w-loading"><span class="spinner" style="border-top-color:var(--g-mn);border-color:var(--g2)"></span> <span data-i18n="fetching_weather">Fetching weather...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── IRRIGATION TAB ─────────────────────────────────────── -->
+  <div id="tab-irrigation" class="tab-panel">
+    <div class="card">
+      <div class="card-head"><div class="ic">💧</div><h3 data-i18n="irrigation_weather">Irrigation & Weather</h3>
+        <span class="s-green" style="margin-left:auto"><span class="dot-live"></span> <span data-i18n="live_api">Live API</span></span>
+      </div>
+      <div id="irr-weather">
+        <div class="w-loading"><span class="spinner" style="border-top-color:var(--g-mn);border-color:var(--g2)"></span> <span data-i18n="loading_weather">Loading weather data...</span></div>
+      </div>
+      <div style="margin-top:18px" class="sec-label" data-i18n="crop_irrigation_plan">Per-Crop Irrigation Plan</div>
+      <div id="irr-crops"></div>
+    </div>
+  </div>
+
+  <!-- ── VENDORS TAB ─────────────────────────────────────────── -->
+  <div id="tab-vendors" class="tab-panel">
+    <div class="card">
+      <div class="card-head"><div class="ic">🏪</div><h3 data-i18n="nearby_vendors">Nearby Vendors</h3></div>
+      <div id="vendor-alert" class="hidden"></div>
+      <div id="vendor-list">
+        <div class="w-loading"><span class="spinner" style="border-top-color:var(--g-mn);border-color:var(--g2)"></span> <span data-i18n="loading_vendors">Loading vendors...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── AI CHAT TAB ─────────────────────────────────────────── -->
+  <div id="tab-chat" class="tab-panel">
+    <div class="card">
+      <div class="card-head"><div class="ic">🤖</div><h3 data-i18n="ai_assistant">Mithrava AI Assistant</h3>
+        <span style="margin-left:auto;font-size:.75rem;color:var(--g6)" data-i18n="text_voice">Text + Voice</span>
+      </div>
+      <div style="background:var(--g-bg);border:1px solid var(--g-pl);border-radius:var(--r-s);padding:8px 14px;margin-bottom:12px;font-size:.8rem;color:var(--g6);display:flex;align-items:center;gap:6px">
+        🌐 <span data-i18n="lang_controlled_by">Language controlled by global selector in navbar</span>
+        — <strong id="chat-lang-display">English</strong>
+      </div>
+      <div class="chat-win" id="chat-win">
+        <div class="cmsg bot" id="chat-welcome-msg">👋 Namaste! I'm Mithrava AI. Ask me anything about your crops, irrigation, pests, or farming tips. You can also use the 🎤 mic button!</div>
+      </div>
+      <div class="chat-row">
+        <textarea id="chat-input" class="fc" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+        <button class="mic-btn" id="mic-btn" title="Voice Input" onclick="toggleMic()">🎤</button>
+        <button class="spk-btn" id="spk-btn" title="Read last reply aloud" onclick="speakLast()">🔊</button>
+        <button class="btn btn-primary" onclick="sendChat()" id="chat-send-btn" data-i18n="send">Send</button>
+      </div>
+      <div id="rec-status" class="hidden" style="display:flex;align-items:center;gap:8px;margin-top:6px;font-size:.8rem;color:var(--red)">
+        <div class="rec-bars"><span></span><span></span><span></span><span></span><span></span></div>
+        <span data-i18n="listening">Listening...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DISEASE TAB ─────────────────────────────────────────── -->
+  <div id="tab-disease" class="tab-panel">
+    <div class="card">
+      <div class="card-head"><div class="ic">🔬</div><h3 data-i18n="disease_detection">Crop Disease Detection</h3></div>
+      <div style="background:var(--g-bg);border:1px solid var(--g-pl);border-radius:var(--r-s);padding:8px 14px;margin-bottom:14px;font-size:.8rem;color:var(--g6);display:flex;align-items:center;gap:6px">
+        🌐 <span data-i18n="lang_controlled_by">Language controlled by global selector in navbar</span>
+        — <strong id="disease-lang-display">English</strong>
+      </div>
+      <div class="upload-area" onclick="document.getElementById('img-input').click()">
+        <div class="u-icon">📷</div>
+        <p style="font-weight:600;color:var(--g-dk);font-family:var(--font-h);font-size:.95rem" data-i18n="upload_photo">Click to upload crop photo</p>
+        <p style="font-size:.8rem;margin-top:4px" data-i18n="upload_hint">JPG, PNG supported</p>
+        <img id="prev-img" src="" alt="preview">
+      </div>
+      <input type="file" id="img-input" accept="image/*" style="display:none" onchange="onImgChange(event)">
+      <button class="btn btn-primary w100" style="margin-top:14px" id="detect-btn" onclick="detectDisease()" data-i18n="analyse_disease">🔍 Analyse Disease</button>
+      <div id="disease-result" class="hidden disease-res"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       ── GOVERNMENT SCHEMES TAB ─────────────────────────────
+       ══════════════════════════════════════════════════════════ -->
+  <div id="tab-schemes" class="tab-panel">
+
+    <!-- Header Banner -->
+    <div class="schemes-hero">
+      <div>
+        <h2>🏛️ Karnataka Govt. Schemes for Farmers</h2>
+        <p>Ongoing & newly launched schemes — click any scheme to see full details & apply</p>
+      </div>
+      <div class="schemes-hero-badges">
+        <span class="sh-badge">✅ 10 Active Schemes</span>
+        <span class="sh-badge">📋 Official Links</span>
+        <span class="sh-badge">🆕 2024–25 Updated</span>
+      </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="scheme-filters">
+      <button class="sf-btn active" onclick="filterSchemes('all',this)">🌾 All Schemes</button>
+      <button class="sf-btn" onclick="filterSchemes('state',this)">🏛️ State</button>
+      <button class="sf-btn" onclick="filterSchemes('central',this)">🇮🇳 Central</button>
+      <button class="sf-btn" onclick="filterSchemes('subsidy',this)">💸 Subsidy</button>
+      <button class="sf-btn" onclick="filterSchemes('cash',this)">💰 Cash Transfer</button>
+      <button class="sf-btn" onclick="filterSchemes('insurance',this)">🛡️ Insurance</button>
+    </div>
+
+    <!-- Schemes List -->
+    <div class="schemes-grid" id="schemes-grid"></div>
+
+  </div><!-- /tab-schemes -->
+
+  <!-- ── CALL TAB ─────────────────────────────────────────────── -->
+  <div id="tab-call" class="tab-panel">
+    <div class="card">
+      <div class="card-head"><div class="ic">📞</div><h3 data-i18n="request_expert_call">Request Expert Call</h3></div>
+      <p style="margin-bottom:18px" data-i18n="call_description">Our agriculture experts will call you back within 2 hours.</p>
+      <div class="fg">
+        <label data-i18n="your_message">Your Message / Issue</label>
+        <textarea id="call-msg" class="fc"></textarea>
+      </div>
+      <button class="btn btn-accent btn-lg w100" onclick="requestCall()" id="call-btn" data-i18n="request_callback">📞 Request a Call Back</button>
+      <div id="call-alert" class="hidden" style="margin-top:12px"></div>
+      <div class="call-confirm" id="call-confirm">
+        <div class="cc-icon">✅</div>
+        <h4 data-i18n="call_submitted">Call Request Submitted!</h4>
+        <p style="font-size:.85rem;color:var(--g6);margin-top:4px"><span data-i18n="expert_will_call">Our expert will call</span> <strong id="confirm-phone">—</strong> <span data-i18n="shortly">shortly.</span></p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /pw -->
+
+<!-- ═══ JAVASCRIPT ══════════════════════════════════════════ -->
+<script>
+
+/* ══════════════════════════════════════════════════════════
+   GOVERNMENT SCHEMES DATA
+   Source: raitamitra.karnataka.gov.in | agriculture.karnataka.gov.in
+           pmkisan.gov.in | pmfby.gov.in | mahitikanaja.karnataka.gov.in
+   ══════════════════════════════════════════════════════════ */
+const SCHEMES = [
+  {
+    id: 1,
+    name: "PM Kisan Samman Nidhi (PM-KISAN)",
+    short: "₹6,000/year direct cash to all farmer families in 3 installments of ₹2,000 each.",
+    icon: "💰",
+    iconBg: "#dcfce7",
+    tags: ["central","cash","ongoing"],
+    desc: "PM-KISAN is a 100% centrally funded scheme that provides income support of ₹6,000 per year to all landholding farmer families across India. The amount is transferred directly to the farmer's bank account in three equal installments of ₹2,000 every four months. In Karnataka, over 50 lakh farmers have been registered. No middlemen — it goes straight via DBT (Direct Benefit Transfer).",
+    details: [
+      { label: "Benefit",       value: "₹6,000 per year (₹2,000 × 3)" },
+      { label: "Who can Apply", value: "All landholding farmers" },
+      { label: "Status",        value: "🟢 Ongoing — Installments active" },
+      { label: "Launched",      value: "February 2019" },
+      { label: "Mode",          value: "Direct Bank Transfer (DBT)" },
+    ],
+    docs: ["Aadhaar Card", "Land Records (RTC/Pahani)", "Bank Account (Aadhaar-linked)", "Mobile Number"],
+    applyUrl: "https://pmkisan.gov.in",
+    infoUrl:  "https://pmkisan.gov.in/homenew.aspx",
+    helpline: "Helpline: 011-24300606 | pmkisan-ict@gov.in",
+  },
+  {
+    id: 2,
+    name: "Raitha Siri Scheme (Karnataka)",
+    short: "₹10,000/hectare incentive to millet farmers (Foxtail, Kodo, Browntop, Jowar etc.) via DBT.",
+    icon: "🌾",
+    iconBg: "#fef9c3",
+    tags: ["state","cash","ongoing"],
+    desc: "Raitha Siri is a Karnataka state scheme aimed at increasing area and productivity of minor millets — Foxtail millet, Kodo millet, Proso millet, Browntop millet, Little millet, and Barnyard millet. Farmers who cultivate these millets receive ₹10,000 per hectare as incentive directly into their bank account through DBT. The scheme also promotes nutritional security and sustainable dryland farming.",
+    details: [
+      { label: "Benefit",       value: "₹10,000 per hectare (DBT)" },
+      { label: "Eligible Crops",value: "Foxtail, Kodo, Browntop, Little, Barnyard millet" },
+      { label: "Status",        value: "🟢 Ongoing 2024–25" },
+      { label: "Mode",          value: "Direct Bank Transfer" },
+      { label: "Apply At",      value: "Raitha Samparka Kendra (RSK)" },
+    ],
+    docs: ["Aadhaar Card", "Land Record (RTC)", "Bank Passbook", "Sowing Certificate from VAS"],
+    applyUrl: "https://raitamitra.karnataka.gov.in/",
+    infoUrl:  "https://raitamitra.karnataka.gov.in/english",
+    helpline: "Contact: Local Raitha Samparka Kendra or Dept of Agriculture Karnataka",
+  },
+  {
+    id: 3,
+    name: "Krishi Bhagya Scheme (Karnataka)",
+    short: "Farm pond construction + sprinkler + pump sets to conserve rainwater for dryland farmers.",
+    icon: "💧",
+    iconBg: "#dbeafe",
+    tags: ["state","subsidy","ongoing"],
+    desc: "Krishi Bhagya is a flagship Karnataka scheme for rainfed (dryland) farmers. It funds the construction of farm ponds with polyline lining to harvest and store rainwater. The stored water is then used during critical crop growth stages. Components include: farm pond construction, polythene lining, diesel pump sets, and sprinkler irrigation units — all on heavy subsidy (up to 90% for SC/ST, 80% for others).",
+    details: [
+      { label: "Subsidy",       value: "Up to 80–90% (SC/ST get 90%)" },
+      { label: "Components",    value: "Farm pond, polylining, pump set, sprinkler" },
+      { label: "Who can Apply", value: "Rainfed / Dryland farmers" },
+      { label: "Status",        value: "🟢 Ongoing — ₹250 Cr allocated 2024–25" },
+      { label: "Apply At",      value: "Zilla Panchayat / Agriculture Dept" },
+    ],
+    docs: ["Aadhaar Card", "Land Record (RTC/Pahani)", "Bank Account", "Caste Certificate (SC/ST)"],
+    applyUrl: "https://raitamitra.karnataka.gov.in/english",
+    infoUrl:  "https://raitamitra.karnataka.gov.in/english",
+    helpline: "Contact: District Agriculture Office or Raitha Samparka Kendra",
+  },
+  {
+    id: 4,
+    name: "PM Fasal Bima Yojana – PMFBY (Crop Insurance)",
+    short: "Crop insurance at very low premium — financial protection against drought, flood, and natural calamities.",
+    icon: "🛡️",
+    iconBg: "#fee2e2",
+    tags: ["central","insurance","ongoing"],
+    desc: "PMFBY provides comprehensive crop insurance to farmers against natural calamities like drought, flood, hailstorm, unseasonal rains, landslides, and pest/disease attacks. Premium is very low — 2% for Kharif crops, 1.5% for Rabi crops, and 5% for commercial crops. The balance premium is shared by the Centre and State government. Karnataka implements it as 'Karnataka Raitha Suraksha PMFBY'. Check status on samrakshane.karnataka.gov.in",
+    details: [
+      { label: "Premium",       value: "2% Kharif | 1.5% Rabi | 5% Commercial" },
+      { label: "Coverage",      value: "Drought, flood, hail, unseasonal rain, pests" },
+      { label: "Status",        value: "🟢 Ongoing — Kharif 2024 active" },
+      { label: "Enrol Via",     value: "Bank branch / Seva Sindhu / CSC center" },
+      { label: "Claim Check",   value: "samrakshane.karnataka.gov.in" },
+    ],
+    docs: ["Aadhaar Card", "Land Records / RTC", "Bank Account", "Sowing Declaration Form"],
+    applyUrl: "https://pmfby.gov.in",
+    infoUrl:  "https://samrakshane.karnataka.gov.in",
+    helpline: "PMFBY Helpline: 1800-200-7710 | Crop Insurance: 14447",
+  },
+  {
+    id: 5,
+    name: "Surya Raitha Scheme (Solar Pump)",
+    short: "Replace electric pump sets with solar-powered pumps — earn extra income by selling surplus power to grid.",
+    icon: "☀️",
+    iconBg: "#fef9c3",
+    tags: ["state","subsidy","ongoing"],
+    desc: "Surya Raitha replaces traditional IP (Irrigation Pump) sets with solar-powered pumps. Farmers get solar pumps that provide daytime power for irrigation without electricity bills. Furthermore, surplus solar energy generated is sold back to GESCOM/BESCOM at ₹6.50/unit, providing extra income. Solar pumps deliver ~1.5× more water than conventional pumps. Implemented through KREDL (Karnataka Renewable Energy Dev Ltd).",
+    details: [
+      { label: "Benefit",       value: "Free daytime power + sell surplus @ ₹6.50/unit" },
+      { label: "Who Eligible",  value: "Farmers with existing IP sets" },
+      { label: "Status",        value: "🟢 Ongoing — expanding statewide" },
+      { label: "Implemented By","value": "KREDL + GESCOM/BESCOM" },
+      { label: "Apply At",      value: "KREDL District Office" },
+    ],
+    docs: ["Aadhaar Card", "Land Record", "Existing pump set details", "Bank Account", "Electricity connection proof"],
+    applyUrl: "https://raitamitra.karnataka.gov.in/english",
+    infoUrl:  "https://kredl.karnataka.gov.in",
+    helpline: "KREDL: 080-22208109 | Energy Dept Karnataka",
+  },
+  {
+    id: 6,
+    name: "PM-KUSUM Scheme (Solar Pump Subsidy)",
+    short: "Central scheme — 60% subsidy on solar pumps up to 7.5 HP for off-grid irrigation.",
+    icon: "🔆",
+    iconBg: "#fef3c7",
+    tags: ["central","subsidy","ongoing"],
+    desc: "PM-KUSUM (Pradhan Mantri Kisan Urja Suraksha evam Utthaan Mahabhiyan) provides 60% central + state subsidy on standalone solar pumps (2 HP to 7.5 HP) for farmers. Farmers pay only 10%, and 30% can be taken as bank loan. It helps reduce diesel costs for irrigation and promotes clean energy. Karnataka has allocated thousands of pumps under Component B of PM-KUSUM.",
+    details: [
+      { label: "Subsidy",       value: "60% (Central + State) + 30% loan option" },
+      { label: "Farmer Pays",   value: "Only 10% of cost" },
+      { label: "Pump Capacity", value: "2 HP to 7.5 HP solar pumps" },
+      { label: "Status",        value: "🟢 Ongoing 2024–25" },
+      { label: "Apply Via",     value: "KREDL / Seva Sindhu" },
+    ],
+    docs: ["Aadhaar Card", "Land Record (RTC)", "Bank Account", "Kisan Credit Card (if availing loan)"],
+    applyUrl: "https://pmkusum.mnre.gov.in",
+    infoUrl:  "https://pmkusum.mnre.gov.in/index.html",
+    helpline: "PM-KUSUM Helpline: 1800-180-3333",
+  },
+  {
+    id: 7,
+    name: "National Food Security Mission – Pulses (NFSM)",
+    short: "₹9,000/hectare incentive for farmers adopting new technology for pulse crops (Tur, Moong, Urad etc.)",
+    icon: "🫘",
+    iconBg: "#f0fdf4",
+    tags: ["central","cash","ongoing"],
+    desc: "NFSM-Pulses aims to increase production and productivity of pulses through adoption of improved varieties and technologies. Participating farmers who adopt new technologies (HYV seeds, IPM, etc.) receive ₹9,000/hectare directly via DBT. Karnataka targets Tur (Redgram), Moong, Urad, and Chickpea under this scheme. It also provides free certified seeds and micro-nutrient kits to registered farmers.",
+    details: [
+      { label: "Incentive",     value: "₹9,000 per hectare (DBT)" },
+      { label: "Crops",         value: "Tur, Moong, Urad, Lentil, Chickpea" },
+      { label: "Status",        value: "🟢 Ongoing 2024–25" },
+      { label: "Also Provides", value: "Free certified seeds + micro-nutrient kit" },
+      { label: "Apply At",      value: "Raitha Samparka Kendra / Agriculture Office" },
+    ],
+    docs: ["Aadhaar Card", "Land Record (RTC)", "Bank Account", "Previous crop details"],
+    applyUrl: "https://raitamitra.karnataka.gov.in/english",
+    infoUrl:  "https://nfsm.gov.in",
+    helpline: "NFSM Helpline: 011-23382651 | Local Agriculture Dept",
+  },
+  {
+    id: 8,
+    name: "Raitha Shakti Scheme – Diesel Subsidy",
+    short: "Diesel subsidy for pump sets used in agriculture — ₹400 crore allocated for Karnataka farmers.",
+    icon: "⛽",
+    iconBg: "#ffedd5",
+    tags: ["state","subsidy","new2025"],
+    desc: "Raitha Shakti Yojana is a newly announced Karnataka Government scheme to provide diesel subsidy to farmers for running pump sets used in irrigation. The government has allocated ₹400 crore for this scheme. Farmers using diesel pumps for irrigation will receive a direct subsidy, reducing their input cost. This is especially beneficial for dryland and semi-irrigated farmers who cannot access grid electricity.",
+    details: [
+      { label: "Benefit",       value: "Diesel subsidy for irrigation pump sets" },
+      { label: "Budget",        value: "₹400 Crore allocated" },
+      { label: "Status",        value: "🆕 Newly announced 2024–25" },
+      { label: "Who Eligible",  value: "Farmers using diesel pump sets for irrigation" },
+      { label: "Apply Via",     value: "Seva Sindhu / Raitha Samparka Kendra" },
+    ],
+    docs: ["Aadhaar Card", "Land Record", "Bank Account (Aadhaar-linked)", "Pump set details"],
+    applyUrl: "https://sevasindhu.karnataka.gov.in",
+    infoUrl:  "https://raitamitra.karnataka.gov.in/english",
+    helpline: "Karnataka Agriculture Dept: 080-22034570",
+  },
+  {
+    id: 9,
+    name: "CM Raitha Vidya Nidhi (Farmer's Child Scholarship)",
+    short: "Scholarship for children of farmers studying in government colleges — up to ₹10,000/year.",
+    icon: "🎓",
+    iconBg: "#ede9fe",
+    tags: ["state","cash","ongoing"],
+    desc: "Chief Minister Raitha Vidya Nidhi is a Karnataka state scheme that provides scholarships to children of farmers who are studying in government or aided colleges. The scheme aims to support farmer families by reducing the burden of education costs. The scholarship amount varies based on the course level — supporting children from primary through higher education enrolled in government institutions.",
+    details: [
+      { label: "Benefit",       value: "Scholarship up to ₹10,000/year" },
+      { label: "Who Eligible",  value: "Children of registered farmers" },
+      { label: "Status",        value: "🟢 Ongoing" },
+      { label: "College Type",  value: "Government / Government-aided colleges" },
+      { label: "Apply Via",     value: "Seva Sindhu / College principal" },
+    ],
+    docs: ["Farmer parent's Aadhaar", "Land Record (RTC)", "Student college ID", "Bank Account (student)", "Income Certificate"],
+    applyUrl: "https://sevasindhu.karnataka.gov.in",
+    infoUrl:  "https://raitamitra.karnataka.gov.in/english",
+    helpline: "Karnataka Agriculture Dept: 080-22034570",
+  },
+  {
+    id: 10,
+    name: "Soil Health Card Scheme (SHC)",
+    short: "Free soil testing + Soil Health Card every 3 years — know your field's exact nutrient status and get fertilizer advice.",
+    icon: "🧪",
+    iconBg: "#d1fae5",
+    tags: ["central","ongoing"],
+    desc: "The Soil Health Card Scheme tests farmers' soil samples and issues a Soil Health Card (SHC) every 3 years showing the soil's nutrient status and recommendations for fertilizers and micro-nutrients. Completely free of cost. Karnataka's agriculture department tests samples at district soil testing labs. The card helps reduce over-fertilization, saves input costs, and improves crop yields.",
+    details: [
+      { label: "Benefit",       value: "Free soil test + nutrient report card" },
+      { label: "Frequency",     value: "Every 3 years per land holding" },
+      { label: "Cost",          value: "Completely FREE" },
+      { label: "Status",        value: "🟢 Ongoing" },
+      { label: "Apply At",      value: "Village Agriculture Assistant (VAS) / Dept office" },
+    ],
+    docs: ["Aadhaar Card", "Land Record (RTC)", "Soil sample from your field (collected by VAS)"],
+    applyUrl: "https://soilhealth.dac.gov.in",
+    infoUrl:  "https://soilhealth.dac.gov.in",
+    helpline: "Local VAA/VAS or Agriculture Office. National: 1800-180-1551",
+  },
+];
+
+/* ── Render Schemes ─────────────────────────────────────── */
+function renderSchemes(filter) {
+  const grid = document.getElementById('schemes-grid');
+  const data = filter === 'all' ? SCHEMES
+    : SCHEMES.filter(s => s.tags.includes(filter));
+
+  if (!data.length) {
+    grid.innerHTML = `<div style="padding:24px;text-align:center;color:var(--g6)">No schemes found for this filter.</div>`;
+    return;
+  }
+
+  grid.innerHTML = data.map(s => {
+    const tagHtml = s.tags.map(tag => {
+      const labels = {
+        ongoing:'✅ Ongoing', central:'🇮🇳 Central', state:'🏛️ State',
+        subsidy:'💸 Subsidy', cash:'💰 Cash Transfer', insurance:'🛡️ Insurance', new2025:'🆕 New 2024–25'
+      };
+      return `<span class="s-tag ${tag}">${labels[tag] || tag}</span>`;
+    }).join('');
+
+    const detailsHtml = s.details.map(d =>
+      `<div class="sdet-item"><div class="sdet-lbl">${d.label}</div><div class="sdet-val">${d.value}</div></div>`
+    ).join('');
+
+    const docsHtml = s.docs.map(d => `<li>${d}</li>`).join('');
+
+    return `
+    <div class="scheme-card" id="scheme-${s.id}">
+      <div class="scheme-header" onclick="toggleScheme(${s.id})">
+        <div class="scheme-icon-box" style="background:${s.iconBg}">${s.icon}</div>
+        <div class="scheme-meta">
+          <div class="scheme-name">${s.name}</div>
+          <div class="scheme-short">${s.short}</div>
+          <div class="scheme-tags">${tagHtml}</div>
+        </div>
+        <div class="scheme-chevron">▼</div>
+      </div>
+      <div class="scheme-body">
+        <div class="scheme-body-inner">
+          <p class="scheme-desc">${s.desc}</p>
+          <div class="scheme-details-grid">${detailsHtml}</div>
+          <div class="scheme-docs">
+            <div class="docs-lbl">📄 Documents Required</div>
+            <ul>${docsHtml}</ul>
+          </div>
+          <div class="scheme-actions">
+            <a class="btn-apply" href="${s.applyUrl}" target="_blank" rel="noopener">
+              🚀 Apply / Register Now
+            </a>
+            <a class="btn-info-link" href="${s.infoUrl}" target="_blank" rel="noopener">
+              ℹ️ Official Info
+            </a>
+          </div>
+          <div class="scheme-helpline">📞 ${s.helpline}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleScheme(id) {
+  const card = document.getElementById(`scheme-${id}`);
+  const isOpen = card.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.scheme-card').forEach(c => c.classList.remove('open'));
+  // Open clicked if it was closed
+  if (!isOpen) {
+    card.classList.add('open');
+    setTimeout(() => card.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+  }
+}
+
+function filterSchemes(tag, btn) {
+  document.querySelectorAll('.sf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSchemes(tag);
+}
+
+/* ══════════════════════════════════════════════════════════
+   LANGUAGE CONFIG
+   ══════════════════════════════════════════════════════════ */
+const LANG_CONFIG = {
+  en: { code:'en', bcp47:'en-IN', label:'English', flag:'🇬🇧' },
+  kn: { code:'kn', bcp47:'kn-IN', label:'ಕನ್ನಡ',   flag:'🌿', sttCodes:['kn-IN','hi-IN','en-IN'] },
+  hi: { code:'hi', bcp47:'hi-IN', label:'हिंदी',    flag:'🇮🇳', sttCodes:['hi-IN'] },
+};
+
+const appLanguage = { code:'en', bcp47:'en-IN', label:'English', flag:'🇬🇧' };
+
+const I18N = {
+  en: {
+    brand_tag:'Smart Farming Assistant', logout:'Logout', tab_home:'Home',
+    tab_irrigation:'Irrigation', tab_vendors:'Vendors', tab_chat:'AI Chat',
+    tab_disease:'Disease', tab_schemes:'Govt Schemes', tab_call:'Call Help',
+    welcome_back:'WELCOME BACK', land_parcels:'Land Parcels', crops:'Crops',
+    total_acres:'Total Acres', my_crops:'My Crops & Lands', loading_crops:'Loading crops...',
+    irrigation_summary:"Today's Irrigation Summary", fetching_weather:'Fetching weather...',
+    irrigation_weather:'Irrigation & Weather', live_api:'Live API',
+    loading_weather:'Loading weather data...', crop_irrigation_plan:'Per-Crop Irrigation Plan',
+    nearby_vendors:'Nearby Vendors', loading_vendors:'Loading vendors...',
+    ai_assistant:'Mithrava AI Assistant', text_voice:'Text + Voice',
+    lang_controlled_by:'Language controlled by global selector in navbar',
+    chat_welcome:"👋 Namaste! I'm Mithrava AI. Ask me anything about your crops, irrigation, pests, or farming tips. You can also use the 🎤 mic button!",
+    chat_placeholder:'Type your farming question...', send:'Send', listening:'Listening...',
+    disease_detection:'Crop Disease Detection', upload_photo:'Click to upload crop photo',
+    upload_hint:'JPG, PNG supported', analyse_disease:'🔍 Analyse Disease',
+    request_expert_call:'Request Expert Call',
+    call_description:'Our agriculture experts will call you back within 2 hours.',
+    your_message:'Your Message / Issue', call_placeholder:'Describe your farming issue...',
+    request_callback:'📞 Request a Call Back', call_submitted:'Call Request Submitted!',
+    expert_will_call:'Our expert will call', shortly:'shortly.',
+    irrigation_advice:'💡 Irrigation Advice', rain_today:'Rain Today',
+    status_active:'🟢 Active', status_harvest:'🟡 Ready to Harvest',
+    acres_needed:'needed/day', skip_rain:'❌ Skip – Rain today',
+    no_crops:'No crops registered.', no_vendors:'No vendors found in',
+    no_vendors_2:'. Contact admin.', server_offline:'Server offline.',
+    ai_error:'AI unavailable. Try again.', demo_note:'Demo',
+    sowing:'Sowing', spraying:'Spraying', harvest:'Harvest',
+    call_success:'✅ Request submitted!', call_offline:'✅ Request logged (offline).',
+    call_failed:'Failed. Try again.', treatment_label:'💊 Recommended Treatment',
+    other_possibilities:'Other possibilities', speak_result:'🔊 Listen',
+  },
+  kn: {
+    brand_tag:'ಸ್ಮಾರ್ಟ್ ಕೃಷಿ ಸಹಾಯಕ', logout:'ಲಾಗ್‌ಔಟ್', tab_home:'ಮುಖಪುಟ',
+    tab_irrigation:'ನೀರಾವರಿ', tab_vendors:'ಮಾರಾಟಗಾರರು', tab_chat:'AI ಚಾಟ್',
+    tab_disease:'ರೋಗ', tab_schemes:'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು', tab_call:'ಕರೆ ಸಹಾಯ',
+    welcome_back:'ಸ್ವಾಗತ', land_parcels:'ಜಮೀನು', crops:'ಬೆಳೆಗಳು',
+    total_acres:'ಒಟ್ಟು ಎಕರೆ', my_crops:'ನನ್ನ ಬೆಳೆಗಳು & ಜಮೀನು',
+    loading_crops:'ಬೆಳೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...', irrigation_summary:'ಇಂದಿನ ನೀರಾವರಿ ಸಾರಾಂಶ',
+    fetching_weather:'ಹವಾಮಾನ ಪಡೆಯಲಾಗುತ್ತಿದೆ...', irrigation_weather:'ನೀರಾವರಿ & ಹವಾಮಾನ',
+    live_api:'ನೇರ ಡೇಟಾ', loading_weather:'ಹವಾಮಾನ ಲೋಡ್...',
+    crop_irrigation_plan:'ಬೆಳೆ ಅನುಸಾರ ನೀರಾವರಿ ಯೋಜನೆ', nearby_vendors:'ಹತ್ತಿರದ ಮಾರಾಟಗಾರರು',
+    loading_vendors:'ಮಾರಾಟಗಾರರನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...', ai_assistant:'ಮಿತ್ರವ AI ಸಹಾಯಕ',
+    text_voice:'ಪಠ್ಯ + ಧ್ವನಿ', lang_controlled_by:'ಭಾಷೆ ನ್ಯಾವ್‌ಬಾರ್‌ನಿಂದ ನಿಯಂತ್ರಿಸಲ್ಪಡುತ್ತದೆ',
+    chat_welcome:'👋 ನಮಸ್ಕಾರ! ನಾನು ಮಿತ್ರವ AI. ಬೆಳೆ, ನೀರಾವರಿ ಬಗ್ಗೆ ಕೇಳಿ. 🎤 ಮೈಕ್ ಬಳಸಬಹುದು!',
+    chat_placeholder:'ನಿಮ್ಮ ಕೃಷಿ ಪ್ರಶ್ನೆ ಟೈಪ್ ಮಾಡಿ...', send:'ಕಳುಹಿಸಿ', listening:'ಆಲಿಸಲಾಗುತ್ತಿದೆ...',
+    disease_detection:'ಬೆಳೆ ರೋಗ ಪತ್ತೆ', upload_photo:'ಬೆಳೆ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ',
+    upload_hint:'JPG, PNG ಬೆಂಬಲಿತ', analyse_disease:'🔍 ರೋಗ ವಿಶ್ಲೇಷಿಸಿ',
+    request_expert_call:'ತಜ್ಞರ ಕರೆ ವಿನಂತಿಸಿ',
+    call_description:'ನಮ್ಮ ತಜ್ಞರು 2 ಗಂಟೆಯಲ್ಲಿ ಕರೆ ಮಾಡುತ್ತಾರೆ.',
+    your_message:'ನಿಮ್ಮ ಸಂದೇಶ / ಸಮಸ್ಯೆ', call_placeholder:'ನಿಮ್ಮ ಸಮಸ್ಯೆ ವಿವರಿಸಿ...',
+    request_callback:'📞 ಕರೆ ವಾಪಸ್ ವಿನಂತಿಸಿ', call_submitted:'ಕರೆ ವಿನಂತಿ ಸಲ್ಲಿಸಲಾಗಿದೆ!',
+    expert_will_call:'ತಜ್ಞರು ಕರೆ ಮಾಡುತ್ತಾರೆ', shortly:'ಶೀಘ್ರದಲ್ಲಿ.',
+    irrigation_advice:'💡 ನೀರಾವರಿ ಸಲಹೆ', rain_today:'ಇಂದು ಮಳೆ',
+    status_active:'🟢 ಸಕ್ರಿಯ', status_harvest:'🟡 ಕಟಾವಿಗೆ ಸಿದ್ಧ',
+    acres_needed:'ದಿನಕ್ಕೆ ಬೇಕು', skip_rain:'❌ ಬಿಟ್ಟುಬಿಡಿ – ಇಂದು ಮಳೆ',
+    no_crops:'ಯಾವುದೇ ಬೆಳೆ ನೋಂದಾಯಿಸಲಾಗಿಲ್ಲ.', no_vendors:'ಮಾರಾಟಗಾರರಿಲ್ಲ',
+    no_vendors_2:'. ಆಡ್ಮಿನ್ ಸಂಪರ್ಕಿಸಿ.', server_offline:'ಸರ್ವರ್ ಆಫ್‌ಲೈನ್.',
+    ai_error:'AI ಲಭ್ಯವಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.', demo_note:'ಡೆಮೋ',
+    sowing:'ಬಿತ್ತನೆ', spraying:'ಸಿಂಪಡಣೆ', harvest:'ಕಟಾವು',
+    call_success:'✅ ವಿನಂತಿ ಸಲ್ಲಿಸಲಾಗಿದೆ!', call_offline:'✅ ವಿನಂತಿ ನೋಂದಾಯಿಸಲಾಗಿದೆ.',
+    call_failed:'ವಿನಂತಿ ವಿಫಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.', treatment_label:'💊 ಶಿಫಾರಸು ಚಿಕಿತ್ಸೆ',
+    other_possibilities:'ಇತರ ಸಾಧ್ಯತೆಗಳು', speak_result:'🔊 ಕೇಳಿ',
+  },
+  hi: {
+    brand_tag:'स्मार्ट कृषि सहायक', logout:'लॉगआउट', tab_home:'होम',
+    tab_irrigation:'सिंचाई', tab_vendors:'विक्रेता', tab_chat:'AI चैट',
+    tab_disease:'रोग', tab_schemes:'सरकारी योजनाएं', tab_call:'कॉल मदद',
+    welcome_back:'स्वागत है', land_parcels:'भूमि', crops:'फसलें',
+    total_acres:'कुल एकड़', my_crops:'मेरी फसलें और जमीन', loading_crops:'फसलें लोड हो रही हैं...',
+    irrigation_summary:'आज का सिंचाई सारांश', fetching_weather:'मौसम प्राप्त हो रहा है...',
+    irrigation_weather:'सिंचाई और मौसम', live_api:'लाइव डेटा',
+    loading_weather:'मौसम लोड हो रहा है...', crop_irrigation_plan:'फसल अनुसार सिंचाई योजना',
+    nearby_vendors:'नजदीकी विक्रेता', loading_vendors:'विक्रेता लोड हो रहे हैं...',
+    ai_assistant:'मित्रवा AI सहायक', text_voice:'टेक्स्ट + आवाज',
+    lang_controlled_by:'भाषा नेवबार सेलेक्टर से नियंत्रित होती है',
+    chat_welcome:'👋 नमस्ते! मैं मित्रवा AI हूं। फसल, सिंचाई के बारे में पूछें। 🎤 माइक भी उपयोग कर सकते हैं!',
+    chat_placeholder:'अपना कृषि प्रश्न टाइप करें...', send:'भेजें', listening:'सुन रहे हैं...',
+    disease_detection:'फसल रोग पहचान', upload_photo:'फसल फोटो अपलोड करें',
+    upload_hint:'JPG, PNG समर्थित', analyse_disease:'🔍 रोग विश्लेषण करें',
+    request_expert_call:'विशेषज्ञ कॉल अनुरोध',
+    call_description:'हमारे कृषि विशेषज्ञ 2 घंटे में कॉल करेंगे।',
+    your_message:'आपका संदेश / समस्या', call_placeholder:'अपनी कृषि समस्या बताएं...',
+    request_callback:'📞 कॉल बैक अनुरोध करें', call_submitted:'कॉल अनुरोध सबमिट हुआ!',
+    expert_will_call:'हमारे विशेषज्ञ कॉल करेंगे', shortly:'जल्द ही।',
+    irrigation_advice:'💡 सिंचाई सलाह', rain_today:'आज बारिश',
+    status_active:'🟢 सक्रिय', status_harvest:'🟡 कटाई के लिए तैयार',
+    acres_needed:'प्रतिदिन चाहिए', skip_rain:'❌ छोड़ें – आज बारिश',
+    no_crops:'कोई फसल दर्ज नहीं।', no_vendors:'विक्रेता नहीं मिले',
+    no_vendors_2:'. एडमिन से संपर्क करें।', server_offline:'सर्वर ऑफलाइन।',
+    ai_error:'AI उपलब्ध नहीं। फिर प्रयास करें।', demo_note:'डेमो',
+    sowing:'बुवाई', spraying:'छिड़काव', harvest:'कटाई',
+    call_success:'✅ अनुरोध सबमिट हुआ!', call_offline:'✅ अनुरोध दर्ज हुआ।',
+    call_failed:'विफल। फिर प्रयास करें।', treatment_label:'💊 अनुशंसित उपचार',
+    other_possibilities:'अन्य संभावनाएं', speak_result:'🔊 सुनें',
+  },
+};
+
+function t(key) {
+  const dict = I18N[appLanguage.code] || I18N['en'];
+  return dict[key] || I18N['en'][key] || key;
+}
+
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  const ci = document.getElementById('chat-input');
+  if (ci) ci.placeholder = t('chat_placeholder');
+  const cm = document.getElementById('call-msg');
+  if (cm) cm.placeholder = t('call_placeholder');
+  const cld = document.getElementById('chat-lang-display');
+  if (cld) cld.textContent = appLanguage.label;
+  const dld = document.getElementById('disease-lang-display');
+  if (dld) dld.textContent = appLanguage.label;
+  const wm = document.getElementById('chat-welcome-msg');
+  if (wm) wm.textContent = t('chat_welcome');
+}
+
+function onGlobalLangChange(code) {
+  const cfg = LANG_CONFIG[code] || LANG_CONFIG['en'];
+  Object.assign(appLanguage, cfg);
+  window.appLanguage = appLanguage;
+  applyTranslations();
+  if (window.MithravaVoice && window.MithravaVoice.setLang) window.MithravaVoice.setLang(code);
+  if (farmer) loadWeather();
+}
+
+/* ══════════════════════════════════════════════════════════
+   APP STATE & INIT
+   ══════════════════════════════════════════════════════════ */
+const API = 'http://localhost:5000';
+let farmer=null, lastBotMsg='', lastSpoken='', recognition=null, isRecording=false, selectedImg=null, weatherData=null;
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadFarmer();
+  initSpeech();
+  applyTranslations();
+  renderSchemes('all');  // ← render schemes on load
+});
+
+function loadFarmer() {
+  try { farmer = JSON.parse(localStorage.getItem('mithrava_farmer')); } catch(e) {}
+  if (!farmer) {
+    farmer = {
+      name:'Raju Patil', phone:'9876543210', city:'Mudbidri',
+      lands:[
+        {crop:'Areca Nut', area:'3.0', status:'active'},
+        {crop:'Coconut',   area:'2.5', status:'active'},
+        {crop:'Paddy',     area:'1.5', status:'harvest'},
+        {crop:'Banana',    area:'1.0', status:'active'},
+      ]
+    };
+  }
+  window.currentFarmer = farmer;
+  renderHeader(); renderHero(); renderCrops(); loadWeather(); loadVendors();
+}
+
+function renderHeader() {
+  const initials = farmer.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('nav-avatar').textContent = initials;
+  document.getElementById('nav-name').textContent   = farmer.name;
+  document.getElementById('nav-city').textContent   = '📍 ' + farmer.city;
+}
+
+function renderHero() {
+  document.getElementById('hero-name').textContent = t('welcome_back').charAt(0).toUpperCase() + t('welcome_back').slice(1).toLowerCase() + ', ' + farmer.name.split(' ')[0] + '! 👋';
+  document.getElementById('hero-city').textContent = farmer.city;
+  const lands = farmer.lands || [];
+  document.getElementById('stat-lands').textContent = lands.length;
+  document.getElementById('stat-crops').textContent = lands.length;
+  document.getElementById('stat-area').textContent  = lands.reduce((s,l)=>s+parseFloat(l.area||0),0).toFixed(1);
+}
+
+const CROP_EMOJI = {
+  tomato:'🍅', onion:'🧅', cotton:'🌸', wheat:'🌾', jowar:'🌾', rice:'🌾',
+  paddy:'🌾', maize:'🌽', potato:'🥔', soybean:'🫘', sugarcane:'🎋',
+  chilli:'🌶️', groundnut:'🥜','areca nut':'🌴', arecanut:'🌴', coconut:'🥥',
+  banana:'🍌', default:'🌱'
+};
+
+function getCropEmoji(crop) {
+  return CROP_EMOJI[(crop||'').toLowerCase()] || CROP_EMOJI.default;
+}
+
+function renderCrops() {
+  const grid   = document.getElementById('crops-grid');
+  const irrDiv = document.getElementById('irr-crops');
+  const lands  = farmer.lands || [];
+  if (!lands.length) { grid.innerHTML=`<p style="color:var(--g6)">${t('no_crops')}</p>`; return; }
+
+  grid.innerHTML = lands.map(l => {
+    const em = getCropEmoji(l.crop);
+    const st = l.status==='harvest'?'harvest':'active';
+    return `<div class="crop-card" data-emoji="${em}">
+      <div class="crop-name">${em} ${l.crop}</div>
+      <div class="crop-area">📐 ${l.area} ${t('total_acres').toLowerCase()}</div>
+      <span class="crop-badge ${st}">${st==='harvest'?t('status_harvest'):t('status_active')}</span>
+    </div>`;
+  }).join('');
+
+  if (irrDiv) {
+    irrDiv.innerHTML = lands.map(l => {
+      const liters = (parseFloat(l.area)*1200).toFixed(0);
+      return `<div style="background:var(--g-bg);border:1px solid var(--g-pl);border-radius:var(--r-s);padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div><strong style="font-family:var(--font-h);color:var(--g-dk)">${getCropEmoji(l.crop)} ${l.crop}</strong>
+          <span style="font-size:.78rem;color:var(--g6);margin-left:8px">${l.area} acres</span></div>
+        <div style="font-size:.84rem;color:var(--g6)" id="irr-advice-${l.crop.replace(/\s/g,'_')}">
+          <span style="color:var(--g-mn);font-weight:600">~${liters}L</span> ${t('acres_needed')}
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+/* ── Weather ─────────────────────────────────────────────── */
+async function loadWeather() {
+  try {
+    const res  = await fetch(`${API}/get_weather/${encodeURIComponent(farmer.city)}?lang=${appLanguage.code}`);
+    const data = await res.json();
+    if (data.success) { 
+      weatherData=data; 
+      renderWeatherStrip('home-weather',data); 
+      renderWeatherStrip('irr-weather',data,true); 
+      updateIrrAdvice(data); 
+    }
+  } catch(e) {
+    // Demo data - falls back if no connection to backend
+    const fb={
+      temperature:28,
+      humidity:60,
+      description:'Partly Cloudy',
+      wind_speed:5,
+      pressure:1013,
+      rain:false,
+      advice:"Moderate temp (28°C): Water once in early morning (6-7 AM).\nCheck soil 10cm deep - if dry, irrigate.\n\n🌾 CROP-SPECIFIC TIPS:\n• Tomato/Pepper: Avoid wet foliage - water at soil level only\n• Rice: Maintain 5cm water level during growing season\n• Onion: Reduce water 3 weeks before harvest\n• Maize: Heavy water needs during tasseling stage",
+      demo:true
+    };
+    weatherData=fb; 
+    renderWeatherStrip('home-weather',fb); 
+    renderWeatherStrip('irr-weather',fb,true); 
+    updateIrrAdvice(fb);
+  }
+}
+
+function getWeatherIcon(desc,rain){
+  if(rain)return'🌧️';
+  const d=(desc||'').toLowerCase();
+  if(d.includes('cloud'))return'⛅';if(d.includes('sun')||d.includes('clear'))return'☀️';
+  if(d.includes('storm'))return'⛈️';if(d.includes('fog')||d.includes('mist'))return'🌫️';return'🌤️';
+}
+
+function renderWeatherStrip(id,d,detailed=false){
+  const icon=getWeatherIcon(d.description,d.rain);
+  const demoTag=d.demo?`<span style="font-size:.7rem;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:999px;margin-left:8px">${t('demo_note')}</span>`:'';
+  const el=document.getElementById(id);if(!el)return;
+  const badges=(d.sowing_ok!==undefined)?`<div class="wt-badges">
+    <span class="wt-badge ${d.sowing_ok?'ok':'no'}">${d.sowing_ok?'✓':'✗'} ${t('sowing')}</span>
+    <span class="wt-badge ${d.spray_ok?'ok':'no'}">${d.spray_ok?'✓':'✗'} ${t('spraying')}</span>
+    <span class="wt-badge ${d.harvest_ok?'ok':'no'}">${d.harvest_ok?'✓':'✗'} ${t('harvest')}</span>
+  </div>`:'';
+  
+  // Format detailed advice with line breaks - show first 5 lines
+  let adviceText = d.advice || 'Water your crops today. No rain expected.';
+  const adviceLines = adviceText.split('\n').slice(0,5).map(line => `<div style="margin-bottom:4px">${line.trim()}</div>`).join('');
+  
+  el.innerHTML=`<div class="weather-strip">
+    <div class="wt-main"><div class="wt-icon">${icon}</div><div>
+      <div class="wt-temp">${d.temperature}°C ${demoTag}</div>
+      <div class="wt-desc">${d.description||'Clear'} · 💨 ${(d.wind_speed || d.wind_speed===0)?d.wind_speed:1.8} ${d.wind_speed!==undefined?'km/h':'m/s'}</div>
+      <div class="wt-humidity">💧 ${d.humidity}% ${d.pressure?`· 🔼 ${d.pressure}mb`:''}</div>${badges}
+    </div></div>
+    <div class="wt-advice"><strong style="display:block;margin-bottom:6px">${t('irrigation_advice')}</strong><div style="font-size:.82rem;line-height:1.5">${adviceLines}</div></div>
+    ${detailed?`<div style="background:rgba(255,255,255,.15);border-radius:var(--r-s);padding:12px 18px;font-size:.85rem;min-width:120px">
+      <div style="opacity:.7;font-size:.68rem;text-transform:uppercase;margin-bottom:4px">${t('rain_today')}</div>
+      <div style="font-size:1.1rem;font-weight:700">${d.rain?'🌧️ Yes':'☀️ No'}</div></div>`:''}
+  </div>`;
+}
+
+function updateIrrAdvice(wd){
+  (farmer.lands||[]).forEach(l=>{
+    const el=document.getElementById(`irr-advice-${l.crop.replace(/\s/g,'_')}`);
+    if(!el)return;
+    const liters=(parseFloat(l.area)*1200).toFixed(0);
+    el.innerHTML=wd.rain?t('skip_rain')
+      :wd.temperature>35?`🔥 <strong style="color:var(--g-mn)">${(liters*1.5).toFixed(0)}L</strong> ${t('acres_needed')}`
+      :`✅ <strong style="color:var(--g-mn)">${liters}L</strong> ${t('acres_needed')}`;
+  });
+}
+
+/* ── Vendors ─────────────────────────────────────────────── */
+async function loadVendors(){
+  try{
+    const res=await fetch(`${API}/get_vendors/${encodeURIComponent(farmer.city.toLowerCase())}`);
+    const data=await res.json();renderVendors(data.vendors||[]);
+  }catch(e){
+    renderVendors([{shop_name:'Krishi Bhandar',city:farmer.city,type:'Seeds & Fertilizer'},{shop_name:'Agro Supplies',city:farmer.city,type:'Pesticide'},{shop_name:'Green Farm Store',city:farmer.city,type:'Equipment'}]);
+  }
+}
+
+function renderVendors(vendors){
+  const div=document.getElementById('vendor-list');
+  if(!vendors.length){div.innerHTML=`<p style="color:var(--g6);padding:10px">${t('no_vendors')} ${farmer.city}${t('no_vendors_2')}</p>`;return;}
+  div.innerHTML=`<div class="vendor-list">${vendors.map(v=>`<div class="vendor-item"><div><div class="vname">🏪 ${v.shop_name}</div><div class="vcity">📍 ${v.city}</div></div><span class="vendor-type">${v.type||'General'}</span></div>`).join('')}</div>`;
+}
+
+/* ── AI Chat ─────────────────────────────────────────────── */
+async function sendChat(){
+  const inp=document.getElementById('chat-input');
+  const q=inp.value.trim();if(!q)return;
+  inp.value='';appendMsg('user',q);appendMsg('bot','...','typing');
+  const btn=document.getElementById('chat-send-btn');btn.disabled=true;
+  try{
+    const res=await fetch(`${API}/ask_ai`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,language:appLanguage.label,context:`Farmer: ${farmer.name}, City: ${farmer.city}`})});
+    const data=await res.json();removeTyping();
+    const answer=data.success?data.answer:t('ai_error');
+    appendMsg('bot',answer);lastBotMsg=answer;
+  }catch(e){removeTyping();appendMsg('bot',t('server_offline'));lastBotMsg=t('server_offline');}
+  btn.disabled=false;
+}
+
+function appendMsg(role,text,cls=''){
+  const win=document.getElementById('chat-win');
+  const d=document.createElement('div');
+  d.className='cmsg '+role+(cls?' '+cls:'');
+  d.id=cls==='typing'?'typing-msg':'';d.textContent=text;
+  win.appendChild(d);win.scrollTop=win.scrollHeight;
+}
+function removeTyping(){const t=document.getElementById('typing-msg');if(t)t.remove();}
+
+/* ── Speech ─────────────────────────────────────────────── */
+function initSpeech(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
+  recognition=new SR();recognition.continuous=false;recognition.interimResults=false;
+  recognition.onresult=e=>{document.getElementById('chat-input').value=e.results[0][0].transcript;stopMic();sendChat();};
+  recognition.onerror=()=>stopMic();recognition.onend=()=>stopMic();
+}
+
+function toggleMic(){if(!recognition){alert('Speech recognition not supported. Try Chrome.');return;}if(isRecording)stopMic();else startMic();}
+
+function startMic(){
+  isRecording=true;recognition.lang=appLanguage.bcp47;recognition.start();
+  document.getElementById('mic-btn').classList.add('active');
+  document.getElementById('mic-btn').textContent='⏹️';
+  const rs=document.getElementById('rec-status');rs.classList.remove('hidden');rs.style.display='flex';
+}
+function stopMic(){
+  isRecording=false;try{recognition.stop();}catch(e){}
+  document.getElementById('mic-btn').classList.remove('active');
+  document.getElementById('mic-btn').textContent='🎤';
+  document.getElementById('rec-status').classList.add('hidden');
+}
+
+function speakText(text,lang){
+  if(!text||!('speechSynthesis'in window))return null;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=lang||appLanguage.bcp47;u.rate=0.9;
+  const voices=window.speechSynthesis.getVoices();
+  const match=voices.find(v=>v.lang===u.lang)||voices.find(v=>v.lang.startsWith(u.lang.slice(0,2)))||null;
+  if(match)u.voice=match;return u;
+}
+function speakLast(){
+  const u=speakText(lastBotMsg);if(!u)return;
+  const spk=document.getElementById('spk-btn');spk.classList.add('speaking');
+  u.onend=()=>spk.classList.remove('speaking');window.speechSynthesis.speak(u);
+}
+
+/* ── Disease Detection ───────────────────────────────────── */
+function onImgChange(e){
+  const file=e.target.files[0];if(!file)return;selectedImg=file;
+  const reader=new FileReader();
+  reader.onload=ev=>{const img=document.getElementById('prev-img');img.src=ev.target.result;img.style.display='block';};
+  reader.readAsDataURL(file);
+}
+
+async function detectDisease(){
+  if(!selectedImg){alert(t('upload_photo'));return;}
+  const btn=document.getElementById('detect-btn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Analysing...';
+  const reader=new FileReader();
+  reader.onload=async ev=>{
+    try{
+      const res=await fetch(`${API}/predict_disease`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image_data:ev.target.result,lang:appLanguage.code})});
+      renderDiseaseResult(await res.json());
+    }catch(e){
+      renderDiseaseResult({success:true,demo:true,disease:'Tomato Early Blight',confidence:88.4,treatment:'Apply Mancozeb 2.5g/liter. Ensure good airflow.',top3:[{disease:'Tomato Early Blight',confidence:88.4},{disease:'Late Blight',confidence:7.2},{disease:'Healthy',confidence:4.4}],spoken:'Disease: Tomato Early Blight. Confidence 88%.',lang:'en'});
+    }
+    btn.disabled=false;btn.innerHTML=t('analyse_disease');
+  };
+  reader.readAsDataURL(selectedImg);
+}
+
+function renderDiseaseResult(d){
+  const el=document.getElementById('disease-result');el.classList.remove('hidden');lastSpoken=d.spoken||'';
+  const demoNote=d.demo?`<span style="font-size:.72rem;background:#fff0d9;color:#a05000;padding:2px 8px;border-radius:999px;margin-left:6px">${t('demo_note')}</span>`:'';
+  const top3Html=(d.top3&&d.top3.length>1)?`<div class="top3-list" style="margin-top:12px"><div style="font-size:.72rem;font-weight:600;color:var(--g6);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">${t('other_possibilities')}</div>${d.top3.slice(1).map(item=>`<div class="top3-item"><div class="top3-bar" style="width:${Math.round(item.confidence)}px"></div><span>${item.disease}</span><span style="margin-left:auto;color:var(--g4)">${item.confidence}%</span></div>`).join('')}</div>`:'';
+  const speakBtn=lastSpoken?`<button class="btn-speak-disease" onclick="speakDiseaseResult()">${t('speak_result')} ${appLanguage.label}</button>`:'';
+  el.innerHTML=`<div class="dname">${d.disease} ${demoNote}</div><div class="dconf">Confidence: ${d.confidence}%<span style="display:inline-block;height:6px;width:${Math.min(d.confidence,200)}px;max-width:200px;background:var(--g-mn);border-radius:3px;margin-left:8px;vertical-align:middle"></span></div><div class="drx"><div class="drx-lbl">${t('treatment_label')}</div>${d.treatment}</div>${top3Html}${speakBtn}`;
+}
+
+function speakDiseaseResult(){if(lastSpoken){const u=speakText(lastSpoken,appLanguage.bcp47);if(u)window.speechSynthesis.speak(u);}}
+
+/* ── Call Request ────────────────────────────────────────── */
+async function requestCall(){
+  const msg=document.getElementById('call-msg').value.trim();
+  const btn=document.getElementById('call-btn');btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
+  try{
+    const res=await fetch(`${API}/request_call`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:farmer.phone,name:farmer.name,city:farmer.city,message:msg||'General help'})});
+    const data=await res.json();
+    if(data.success){document.getElementById('confirm-phone').textContent=farmer.phone;document.getElementById('call-confirm').style.display='block';document.getElementById('call-msg').value='';showAlert('call-alert','ok',t('call_success'));}
+    else showAlert('call-alert','err',t('call_failed'));
+  }catch(e){document.getElementById('confirm-phone').textContent=farmer.phone;document.getElementById('call-confirm').style.display='block';showAlert('call-alert','ok',t('call_offline'));}
+  btn.disabled=false;btn.innerHTML=t('request_callback');
+}
+
+/* ── Tab Switching ───────────────────────────────────────── */
+function switchTab(name,el){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  el.classList.add('active');
+  if(name==='irrigation')loadWeather();
+  if(name==='vendors')loadVendors();
+}
+
+/* ── Helpers ─────────────────────────────────────────────── */
+function showAlert(id,type,msg){
+  const el=document.getElementById(id);if(!el)return;
+  el.className='alert al-'+type;el.textContent=msg;el.classList.remove('hidden');
+  if(type==='ok')setTimeout(()=>el.classList.add('hidden'),4000);
+}
+function logout(){localStorage.removeItem('mithrava_farmer');localStorage.removeItem('mithrava_role');window.location.href='index.html';}
+
+window.appLanguage = appLanguage;
+</script>
+
+<script src="voice_advisor.js"></script>
+</body>
+</html>
