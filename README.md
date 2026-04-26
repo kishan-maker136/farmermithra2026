@@ -126,8 +126,8 @@ E --> F[Recommendations]
 
 <div align="center">
 
-**Kishan BC**
-🚀 AI Innovator
+**Algo Boy's**
+🚀 AI Innovators
 
 </div>
 
